@@ -1,0 +1,27 @@
+# Dependency directories
+node_modules/
+
+# Environment files
+.env
+
+# Log files
+logs/
+
+# Build output
+dist/
+build/
+*.log
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor-specific files
+.vscode/
+.idea/
+
+# User-specific files
+*.sublime-workspace
+*.suo
+*.user
+*.sln.docstates
