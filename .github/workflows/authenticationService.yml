@@ -26,7 +26,11 @@ jobs:
           node-version: '16.17.1'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+        cd authentication-service
+        npm ci
 
       - name: Build and start
-        run: npm start
+        run: |
+        cd authentication-service
+        npm start
