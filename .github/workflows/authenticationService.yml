@@ -27,10 +27,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-        cd authentication-service
-        npm ci
+          cd authentication-service
+          npm ci
 
       - name: Build and start
         run: |
-        cd authentication-service
-        npm start
+          cd authentication-service
+          npm start
