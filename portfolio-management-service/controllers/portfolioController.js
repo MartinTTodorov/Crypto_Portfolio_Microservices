@@ -47,7 +47,7 @@ const removeAddress = async (req, res) => {
     portfolio = await portfolio.update({ addresses: portfolio.addresses.filter(a => a !== addressId) });
     res.json(portfolio);
   } catch (error) {
-    console.error('Error removing address:', error);
+    console.error('Error removing address1:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
