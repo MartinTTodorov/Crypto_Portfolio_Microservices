@@ -37,25 +37,16 @@ jobs:
 
 
   sonarcloud:
+    name: SonarCloud
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
         with:
-          node-version: '14'
-
-      - name: Install dependencies
-        run: |
-          cd authentication-service
-          npm ci
-
+          fetch-depth: 0 
       - name: SonarCloud Scan
-        run: sonar-scanner
+        uses: SonarSource/sonarcloud-github-action@master
         env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN}}
+
 

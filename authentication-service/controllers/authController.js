@@ -57,7 +57,7 @@ exports.authenticateTokenAndRole = (role = null) => (req, res, next) => {
 
   jwt.verify(token, `${process.env.JWT_SECRET}`, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: 'Forbidden' });
+      return res.status(403).json({ message: 'Forbidden!' });
     }
 
     if (role && user.role !== role) {
