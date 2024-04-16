@@ -1,30 +1,70 @@
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs');
-const User = require('../models/user');
+const User = require('../models/user.js');
+const userController = require('./userController');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-passport.use(new LocalStrategy(async (username, password, done) => {
+
+exports.login = async (req, res) => {
+
+  const { email, password } = req.body;
+
   try {
-    const user = await User.findOne({ username });
+    const user = await userController.getUserByEmail(email);
+
     if (!user) {
-      return done(null, false, { message: 'Incorrect username.' });
+      return res.status(401).json({ message: 'Login failed' });
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return done(null, false, { message: 'Incorrect password.' });
+    const hashedPassword = await bcrypt.hash(password, user.salt);
+
+    if (hashedPassword === user.password) {
+      const token = jwt.sign(
+        {
+          userId: user._id,
+          role: user.role,
+        },
+        process.env.JWT_SECRET,
+        { 
+          expiresIn: '10h' 
+        }
+      );
+      
+      return res.status(200).json({ message: 'Login successful', token: token });
+    } else {
+      return res.status(401).json({ message: 'Login failed' });
     }
-    return done(null, user);
   } catch (error) {
-    return done(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Internal server error',
+      error: error.message,
+    });
   }
-}));
+};
 
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
 
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => {
-    done(err, user);
+
+exports.register = async (req, res) => {
+  //All validations are inside the createUser
+    const newUser = await userController.createUser(req, res);
+};
+
+exports.authenticateTokenAndRole = (role = null) => (req, res, next) => {
+  const token = req.headers['authorization'];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized!' });
+  }
+
+  jwt.verify(token, `${process.env.JWT_SECRET}`, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    if (role && user.role !== role) {
+      return res.status(403).json({ message: 'Access denied. You are not permitted to perform that action.' });
+    }
+
+    req.role = role;
+    next();
   });
-});
+};

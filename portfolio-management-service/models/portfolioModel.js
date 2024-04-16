@@ -21,4 +21,5 @@ const Portfolio = sequelize.define('Portfolio', {
   timestamps: true
 });
 
+
 module.exports = Portfolio;
