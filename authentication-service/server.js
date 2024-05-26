@@ -1,26 +1,14 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const passport = require('passport');
-const authRoutes = require('./routes/auth');
-require('./controllers/authController');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.SERVER_PORT;
 
 app.use(express.json());
-app.use(passport.initialize());
+app.use('/api/auth', authRoutes);
 
-mongoose.connect('mongodb://localhost:27017/authentication_service', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((err) => {
-  console.error('Error connecting to MongoDB', err);
+const server = app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
 
-app.use('/auth', authRoutes);
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+module.exports = server;

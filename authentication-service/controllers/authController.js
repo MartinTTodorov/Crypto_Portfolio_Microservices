@@ -1,70 +1,49 @@
-const User = require('../models/user.js');
-const userController = require('./userController');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const User = require('../models/userModel');
+
+const registerUser = async (req, res) => {
+  const { username, password } = req.body;
+  const role = 'user';
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    const newUser = await User.create(username, hashedPassword, salt, role);
+    res.status(201).json({ id: newUser.id, username: newUser.username });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 
-exports.login = async (req, res) => {
-
-  const { email, password } = req.body;
+const loginUser = async (req, res) => {
+  const { username, password } = req.body;
 
   try {
-    const user = await userController.getUserByEmail(email);
-
+    const user = await User.findByUsername(username);
     if (!user) {
-      return res.status(401).json({ message: 'Login failed' });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
-    const hashedPassword = await bcrypt.hash(password, user.salt);
 
-    if (hashedPassword === user.password) {
-      const token = jwt.sign(
-        {
-          userId: user._id,
-          role: user.role,
-        },
-        process.env.JWT_SECRET,
-        { 
-          expiresIn: '10h' 
-        }
-      );
-      
-      return res.status(200).json({ message: 'Login successful', token: token });
-    } else {
-      return res.status(401).json({ message: 'Login failed' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
-  } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Internal server error',
-      error: error.message,
-    });
+
+    const token = jwt.sign(
+      { userId: user.id, username: user.username, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ message: 'Login successful', token: token });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-
-
-exports.register = async (req, res) => {
-  //All validations are inside the createUser
-    const newUser = await userController.createUser(req, res);
-};
-
-exports.authenticateTokenAndRole = (role = null) => (req, res, next) => {
-  const token = req.headers['authorization'];
-
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
-  jwt.verify(token, `${process.env.JWT_SECRET}`, (err, user) => {
-    if (err) {
-      return res.status(403).json({ message: 'Forbidden' });
-    }
-
-    if (role && user.role !== role) {
-      return res.status(403).json({ message: 'Access denied. You are not permitted to perform that action.' });
-    }
-
-    req.role = role;
-    next();
-  });
+module.exports = {
+  registerUser,
+  loginUser,
 };
