@@ -1,0 +1,22 @@
+# Ignore node_modules directory
+node_modules
+
+# Ignore log files
+*.log
+
+# Ignore local development environment files
+
+
+# Ignore Dockerfile and docker-compose.yml (not needed inside the container)
+Dockerfile
+docker-compose.yml
+
+# Ignore other common files/directories that are not needed inside the container
+.dockerignore
+.git
+.gitignore
+.vscode
+.idea
+coverage
+test
+*.md

@@ -3,7 +3,11 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
 const app = express();
 const cors = require('cors');
-const port = process.env.PORT || 3002;
+const port = process.env.PORT;
+
+
+const dotenv = require('dotenv');
+dotenv.config();
 
 const corsOptions = {
   origin: 'http://localhost:3100', // Replace with your frontend URL

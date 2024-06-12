@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./api-gateway-service
+    ports:
+      - "3000:3000"
+    depends_on:
+      - authentication
+      - user-management
+
+  authentication:
+    build: ./authentication-service
+    ports:
+      - "3001:3001"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: stpt12
+      POSTGRES_DB: auth_db
+    depends_on:
+      - auth-db
+
+  auth-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: stpt12
+      POSTGRES_DB: auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+
+  user-management:
+    build: ./user-management-service
+    ports:
+      - "3002:3002"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: stpt12
+      POSTGRES_DB: user_db
+    depends_on:
+      - user-db
+
+  user-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+
+volumes:
+  auth-db-data:
+  user-db-data:
