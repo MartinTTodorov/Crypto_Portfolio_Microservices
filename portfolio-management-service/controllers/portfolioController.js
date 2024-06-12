@@ -8,7 +8,7 @@ const createPortfolio = async (req, res) => {
     const portfolio = await Portfolio.create({ userId, addresses: [] });
     res.status(201).json(portfolio);
   } catch (error) {
-    console.error('Error creating portfolio:', error);
+    console.error('Error creating the portfolio:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
