@@ -13,7 +13,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 
 const server = app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
 
 module.exports = server;
