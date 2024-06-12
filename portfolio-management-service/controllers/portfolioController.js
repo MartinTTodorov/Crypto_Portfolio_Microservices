@@ -28,7 +28,7 @@ const addAddress = async (req, res) => {
     portfolio = await portfolio.update({ addresses: [...portfolio.addresses, address] });
     res.json(portfolio);
   } catch (error) {
-    console.error('Error adding address:', error);
+    console.error('Error adding the address:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

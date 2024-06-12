@@ -17,6 +17,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: stpt12
       POSTGRES_DB: auth_db
+      DATABASE_URL: postgres://postgres:stpt12@auth-db:5432/auth_db
     depends_on:
       - auth-db
 
@@ -27,7 +28,7 @@ services:
       POSTGRES_PASSWORD: stpt12
       POSTGRES_DB: auth_db
     ports:
-      - "5432:5432"
+      - "5434:5432"  # Changed the host port to 5434
     volumes:
       - auth-db-data:/var/lib/postgresql/data
 
@@ -39,6 +40,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: stpt12
       POSTGRES_DB: user_db
+      DATABASE_URL: postgres://postgres:stpt12@user-db:5432/user_db
     depends_on:
       - user-db
 
@@ -46,10 +48,10 @@ services:
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: stpt12
       POSTGRES_DB: user_db
     ports:
-      - "5433:5432"
+      - "5433:5432"  # Keeping this port unchanged as it doesn't conflict
     volumes:
       - user-db-data:/var/lib/postgresql/data
 
