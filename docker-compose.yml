@@ -49,6 +49,26 @@ services:
     volumes:
       - user-db-data:/var/lib/postgresql/data
 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  # Mount local prometheus directory to container
+    
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3003:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana:/var/lib/grafana
+    depends_on:
+      - prometheus
+
 volumes:
   auth-db-data:
   user-db-data:
+  prometheus_data:  # Define volume for Prometheus data
+  grafana_data:     # Define volume for Grafana data
