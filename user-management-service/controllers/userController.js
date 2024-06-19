@@ -1,9 +1,9 @@
 const userModel = require('../models/userModel');
 
 exports.createUser = async (req, res) => {
-  const { name, phone, address } = req.body;
+  const { id, name, phone, address } = req.body;
   try {
-    const newUser = await userModel.createUser(name, phone, address);
+    const newUser = await userModel.createUser(id, name, phone, address);
     res.status(201).json(newUser);
   } catch (error) {
     console.error(error);

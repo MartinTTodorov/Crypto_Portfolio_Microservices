@@ -17,6 +17,7 @@ services:
       - ./authentication-service/.env
     depends_on:
       - auth-db
+      - rabbitmq  # Depend on RabbitMQ service
 
   auth-db:
     image: postgres:13
@@ -37,6 +38,7 @@ services:
       - ./user-management-service/.env
     depends_on:
       - user-db
+      - rabbitmq  # Depend on RabbitMQ service
 
   user-db:
     image: postgres:13
@@ -49,13 +51,22 @@ services:
     volumes:
       - user-db-data:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:3.9.17-management
+    ports:
+      - "5672:5672"    # RabbitMQ messaging port
+      - "15672:15672"  # RabbitMQ management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
   prometheus:
     image: prom/prometheus
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  # Mount local prometheus directory to container
-    
+
   grafana:
     image: grafana/grafana
     ports:

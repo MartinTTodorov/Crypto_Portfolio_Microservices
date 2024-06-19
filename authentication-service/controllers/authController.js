@@ -1,21 +1,29 @@
+// authentication-service/controllers/authController.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const { publishToQueue } = require('../connections/rabbitmq');
 
 const registerUser = async (req, res) => {
   const { username, password } = req.body;
+  const name = "empty";
+  const phone = "empty";
+  const address = "empty";
   const role = 'user';
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     
     const newUser = await User.create(username, hashedPassword, salt, role);
+    
+    // Publish user data to RabbitMQ
+    await publishToQueue('user_registration', { id: newUser.id, name: name, phone: phone, address: address });
+
     res.status(201).json({ id: newUser.id, username: newUser.username });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 const loginUser = async (req, res) => {
   const { username, password } = req.body;

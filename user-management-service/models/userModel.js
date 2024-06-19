@@ -1,11 +1,12 @@
-const db = require('../db/db');
+const db = require('../connections/db');
 
-exports.createUser = async (name, phone, address) => {
-  const query = 'INSERT INTO "usersdata" (name, phone, address) VALUES ($1, $2, $3) RETURNING *';
-  const values = [name, phone, address];
+exports.createUser = async (id, name, phone, address) => {
+  const query = 'INSERT INTO "usersdata" (id, name, phone, address) VALUES ($1, $2, $3, $4) RETURNING *';
+  const values = [id, name, phone, address];
   const result = await db.query(query, values);
   return result.rows[0];
 };
+
 
 exports.getUser = async (id) => {
   const query = 'SELECT * FROM "usersdata" WHERE id = $1';
