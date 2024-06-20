@@ -6,9 +6,9 @@ const { publishToQueue } = require('../connections/rabbitmq');
 
 const registerUser = async (req, res) => {
   const { username, password } = req.body;
-  const name = "empty";
-  const phone = "empty";
-  const address = "empty";
+  const name = "Ricardo";
+  const phone = "123456789";
+  const address = "Eindhoven";
   const role = 'user';
   try {
     const salt = await bcrypt.genSalt(10);

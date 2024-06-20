@@ -5,6 +5,7 @@ const userRoutes = require('./routes/userRoutes');
 const cors = require('cors');
 const { connectRabbitMQ } = require('./connections/rabbitmq'); // Import RabbitMQ connection
 const dotenv = require('dotenv');
+
 dotenv.config();
 
 const app = express();

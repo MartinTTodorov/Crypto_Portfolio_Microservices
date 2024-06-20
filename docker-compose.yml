@@ -8,6 +8,7 @@ services:
     depends_on:
       - authentication
       - user-management
+      - portfolio-service
 
   authentication:
     build: ./authentication-service
@@ -17,7 +18,7 @@ services:
       - ./authentication-service/.env
     depends_on:
       - auth-db
-      - rabbitmq  # Depend on RabbitMQ service
+      - rabbitmq
 
   auth-db:
     image: postgres:13
@@ -38,7 +39,7 @@ services:
       - ./user-management-service/.env
     depends_on:
       - user-db
-      - rabbitmq  # Depend on RabbitMQ service
+      - rabbitmq
 
   user-db:
     image: postgres:13
@@ -51,11 +52,29 @@ services:
     volumes:
       - user-db-data:/var/lib/postgresql/data
 
+  portfolio-service:
+    build: ./portfolio-management-service
+    ports:
+      - "3005:3005"  # Assuming portfolio service runs on port 3004
+    depends_on:
+      - portfolio-db
+
+  portfolio-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: stpt12
+      POSTGRES_DB: portfolio_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - portfolio-db-data:/var/lib/postgresql/data
+
   rabbitmq:
     image: rabbitmq:3.9.17-management
     ports:
-      - "5672:5672"    # RabbitMQ messaging port
-      - "15672:15672"  # RabbitMQ management UI port
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -65,7 +84,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  # Mount local prometheus directory to container
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
   grafana:
     image: grafana/grafana
@@ -81,5 +100,6 @@ services:
 volumes:
   auth-db-data:
   user-db-data:
-  prometheus_data:  # Define volume for Prometheus data
-  grafana_data:     # Define volume for Grafana data
+  portfolio-db-data:
+  prometheus_data:
+  grafana_data:

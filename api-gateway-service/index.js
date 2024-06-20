@@ -21,7 +21,15 @@ app.use('/api/users', createProxyMiddleware({
   target: 'http://user-management:3002', // Use service name
   changeOrigin: true,
   pathRewrite: {
-    '^/api/users': '/api/users', // Rewrite the path to include /api/users in the target
+    '': '/api/users', // Rewrite the path to include /api/users in the target
+  },
+}));
+
+app.use('/api/portfolio', createProxyMiddleware({
+  target: 'http://portfolio-service:3005', // Use service name
+  changeOrigin: true,
+  pathRewrite: {
+    '': '/api/portfolio',
   },
 }));
 

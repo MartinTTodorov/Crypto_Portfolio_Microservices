@@ -7,7 +7,6 @@ const connectRabbitMQ = async () => {
   try {
     const connection = await amqp.connect('amqp://guest:guest@rabbitmq:5672'); // Replace with your RabbitMQ connection string
     channel = await connection.createChannel();
-    await channel.assertQueue('user_registration', { durable: true });
     await channel.assertQueue('user_deletion', { durable: true });
 
     console.log('Connected to RabbitMQ. Waiting for messages...');
@@ -19,12 +18,12 @@ const connectRabbitMQ = async () => {
         console.log('Received deletion message for user:', userId);
 
         try {
-          const query = 'DELETE FROM "users" WHERE id = $1';
+          const query = 'DELETE FROM portfolios WHERE user_id = $1';
           await db.query(query, [userId]);
-          console.log('User credentials deleted successfully:', userId);
+          console.log('User portfolios deleted successfully:', userId);
           channel.ack(msg); // Acknowledge message
         } catch (error) {
-          console.error('Failed to delete user credentials:', error);
+          console.error('Failed to delete user portfolios:', error);
         }
       }
     }, { noAck: false }); // Ensure noAck is false to manually acknowledge messages

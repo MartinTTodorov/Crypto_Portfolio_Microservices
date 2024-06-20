@@ -1,4 +1,5 @@
 const userModel = require('../models/userModel');
+const { publishToQueue } = require('../connections/rabbitmq');
 
 exports.createUser = async (req, res) => {
   const { id, name, phone, address } = req.body;
@@ -47,6 +48,8 @@ exports.deleteUser = async (req, res) => {
   try {
     const deletedUser = await userModel.deleteUser(id);
     if (deletedUser) {
+      // Publish a message to the user_deletion queue
+      await publishToQueue('user_deletion', { userId: id });
       res.status(200).json(deletedUser);
     } else {
       res.status(404).json({ error: 'User not found' });
@@ -56,6 +59,7 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete user' });
   }
 };
+
 
 exports.getAllUsers = async (req, res) => {
     try {

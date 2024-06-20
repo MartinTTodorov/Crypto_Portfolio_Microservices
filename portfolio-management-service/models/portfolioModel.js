@@ -1,25 +1,37 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../database/connection');
+const db = require('../connections/db');
 
-const Portfolio = sequelize.define('Portfolio', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
-  },
-  userId: {
-    type: DataTypes.UUID,
-    allowNull: false
-  },
-  
-  addresses: {
-    type: DataTypes.ARRAY(DataTypes.STRING),
-    allowNull: false,
-    defaultValue: []
+const createPortfolio = async (userId, address, blockchain) => {
+  const query = `
+    INSERT INTO portfolios (user_id, address, blockchain, created_at)
+    VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+    RETURNING *;
+  `;
+  const values = [userId, address, blockchain];
+
+  try {
+    const { rows } = await db.query(query, values);
+    return rows[0];
+  } catch (error) {
+    throw error;
   }
-}, {
-  timestamps: true
-});
+};
 
+const getPortfolio = async (userId) => {
+  const query = `
+    SELECT * FROM portfolios
+    WHERE user_id = $1;
+  `;
+  const values = [userId];
 
-module.exports = Portfolio;
+  try {
+    const { rows } = await db.query(query, values);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = {
+  createPortfolio,
+  getPortfolio,
+};
