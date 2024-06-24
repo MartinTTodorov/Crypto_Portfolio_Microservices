@@ -93,7 +93,7 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-management-service:latest gcr.io/portfolio-tracker-427308/portfolio-service:latest
+          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-service:latest gcr.io/portfolio-tracker-427308/portfolio-service:latest
 
       - name: Push Docker image to Artifact Registry
         run: |
