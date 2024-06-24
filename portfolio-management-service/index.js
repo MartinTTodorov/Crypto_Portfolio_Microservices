@@ -8,7 +8,7 @@ const client = require('prom-client');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.SERVER_PORT;
+const PORT = process.env.SERVER_PORT || 3005;
 
 app.use(bodyParser.json());
 
@@ -65,7 +65,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, async () => {
-  console.log(`Portfolio Management Service running on port ${PORT}`);
+  console.log(`Portfolio Management Service is running on port ${PORT}`);
 
   try {
     await connectRabbitMQ();
