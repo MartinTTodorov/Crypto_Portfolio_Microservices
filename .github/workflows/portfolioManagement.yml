@@ -38,7 +38,13 @@ jobs:
       - name: Build Docker image
         run: |
           cd portfolio-management-service
-          docker build -t portfolio-service:latest .
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-management-service:latest .
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-management-service:latest
 
   sonarcloud:
     name: SonarCloud
@@ -55,33 +61,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  dockerhub:
+  push-to-artifact-registry:
     runs-on: ubuntu-latest
     needs: [sonarcloud]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-
-      - name: Build Docker image
-        run: |
-          cd portfolio-management-service
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-management-service:latest .
-
-      - name: Push Docker image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-management-service:latest
-
-  google-cloud:
-    runs-on: ubuntu-latest
-    needs: [dockerhub]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
@@ -91,10 +75,14 @@ jobs:
         run: |
           gcloud auth configure-docker
 
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+      - name: Pull Docker image from Docker Hub
+        run: docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-management-service:latest
+
       - name: Tag Docker image
-        run: |
-          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-service:latest gcr.io/portfolio-tracker-427308/portfolio-service:latest
+        run: docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-management-service:latest gcr.io/portfolio-tracker-427308/portfolio-service:latest
 
       - name: Push Docker image to Artifact Registry
-        run: |
-          docker push gcr.io/portfolio-tracker-427308/portfolio-service:latest
+        run: docker push gcr.io/portfolio-tracker-427308/portfolio-service:latest
