@@ -31,7 +31,22 @@ const getPortfolio = async (userId) => {
   }
 };
 
+const getAllPortfolios = async () => {
+  const query = `
+    SELECT * FROM portfolios;
+  `;
+
+  try {
+    const { rows } = await db.query(query);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 module.exports = {
   createPortfolio,
   getPortfolio,
+  getAllPortfolios
 };

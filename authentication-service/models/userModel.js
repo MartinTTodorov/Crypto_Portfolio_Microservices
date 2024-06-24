@@ -37,6 +37,17 @@ class User {
       throw new Error('Error fetching user: ' + err.message);
     }
   }
+
+  static async getAll() {
+    const text = 'SELECT * FROM users';
+    try {
+      const res = await db.query(text);
+      return res.rows.map(user => new User(user.id, user.username, user.password, user.salt, user.role));
+    } catch (err) {
+      throw new Error('Error fetching users: ' + err.message);
+    }
+  }
+
   
 }
 

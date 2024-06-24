@@ -5,3 +5,15 @@ scrape_configs:
   - job_name: 'authentication'
     static_configs:
       - targets: ['authentication:3001']
+  
+  - job_name: 'user-management'
+    static_configs:
+      - targets: ['user-management:3002']
+
+  - job_name: 'portfolio-management'
+    static_configs:
+      - targets: ['portfolio-service:3005']
+    
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:3000']

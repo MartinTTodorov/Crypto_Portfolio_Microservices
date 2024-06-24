@@ -5,14 +5,13 @@ let channel;
 
 const connectRabbitMQ = async () => {
   try {
-    const connection = await amqp.connect('amqp://guest:guest@rabbitmq:5672'); // Replace with your RabbitMQ connection string
+    const connection = await amqp.connect('amqp://guest:guest@rabbitmq:5672');
     channel = await connection.createChannel();
     await channel.assertQueue('user_registration', { durable: true });
     await channel.assertQueue('user_deletion', { durable: true });
 
     console.log('Connected to RabbitMQ. Waiting for messages...');
 
-    // Consume user deletion messages
     channel.consume('user_deletion', async (msg) => {
       if (msg !== null) {
         const { userId } = JSON.parse(msg.content.toString());
@@ -22,13 +21,13 @@ const connectRabbitMQ = async () => {
           const query = 'DELETE FROM "users" WHERE id = $1';
           await db.query(query, [userId]);
           console.log('User credentials deleted successfully:', userId);
-          channel.ack(msg); // Acknowledge message
+          channel.ack(msg);
         } catch (error) {
           console.error('Failed to delete user credentials:', error);
+          channel.nack(msg); // Not acknowledge the message to requeue it
         }
       }
-    }, { noAck: false }); // Ensure noAck is false to manually acknowledge messages
-
+    }, { noAck: false });
   } catch (err) {
     console.error('Failed to connect to RabbitMQ', err);
   }

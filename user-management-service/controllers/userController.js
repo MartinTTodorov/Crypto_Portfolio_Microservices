@@ -50,7 +50,7 @@ exports.deleteUser = async (req, res) => {
     if (deletedUser) {
       // Publish a message to the user_deletion queue
       await publishToQueue('user_deletion', { userId: id });
-      res.status(200).json(deletedUser);
+      res.status(200).json({ message: 'User deleted successfully' });
     } else {
       res.status(404).json({ error: 'User not found' });
     }

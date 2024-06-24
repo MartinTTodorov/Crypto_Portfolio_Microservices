@@ -23,7 +23,18 @@ const getPortfolio = async (req, res, next) => {
   }
 };
 
+const getAllPortfolios = async (req, res) => {
+  try {
+    const portfolios = await getAllPortfolios();
+    res.status(200).json(portfolios);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
   createPortfolio,
   getPortfolio,
+  getAllPortfolios
 };
