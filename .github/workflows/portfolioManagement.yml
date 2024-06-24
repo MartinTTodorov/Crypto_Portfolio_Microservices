@@ -61,7 +61,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  push-to-artifact-registry:
+  google-cloud:
     runs-on: ubuntu-latest
     needs: [sonarcloud]
 
