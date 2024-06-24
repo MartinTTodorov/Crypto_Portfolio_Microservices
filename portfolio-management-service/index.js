@@ -65,7 +65,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, async () => {
-  console.log(`Portfolio Management Service is running on port ${PORT}`);
+  console.log(`Portfolio Management Service running on port ${PORT}`);
 
   try {
     await connectRabbitMQ();
